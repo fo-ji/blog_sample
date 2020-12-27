@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\PostRequest;
+use Illuminate\Support\Facades\DB;
 use App\Post;
-use App\Read;
 use Auth;
 
-class PostController extends Controller
+class AdminController extends Controller
 {
     public function __construct()
     {
@@ -23,7 +23,7 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
-        return view('posts.index', compact('posts'));
+        return view('admin.index', compact('posts'));
     }
 
     /**
@@ -33,7 +33,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        //
     }
 
     /**
@@ -42,17 +42,9 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(PostRequest $request)
+    public function store(Request $request)
     {
-        $post = new Post;
-
-        $post -> title = $request -> title;
-        $post -> body = $request -> body;
-        $post -> user_id = Auth::id();
-
-        $post -> save();
-
-        return redirect()->route('posts.index');
+        //
     }
 
     /**
@@ -65,9 +57,19 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        return view('posts.show', [
+        $readers = DB::table('reads')
+                    ->join('users', 'users.id', '=', 'reads.user_id')
+                    ->where('reads.post_id', '=', $id)
+                    ->get();
+
+        return view('admin.show', [
             'post' => $post,
+            'readers' => $readers,
         ]);
+
+// ReadテーブルとUserテーブルをJOINしたのちに、
+// Where句にてpost_id（Readテーブル）と表示中のpostのIDの条件一致のものを配列orオブジェクトにて取得、
+// foreachにて表示・出力
     }
 
     /**
@@ -102,39 +104,5 @@ class PostController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    /**
-     * 引数のIDに紐づく投稿に既読する
-     *
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function read($id)
-    {
-        Read::create([
-            'post_id' => $id,
-            'user_id' => Auth::id(),
-        ]);
-
-        session()->flash('success', 'already read');
-
-        return redirect()->back();
-    }
-
-    /**
-     * 引数のIDに紐づく投稿の既読を解除する
-     *
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function unread($id)
-    {
-        $read = Read::where('post_id', $id)->where('user_id', Auth::id())->first();
-        $read->delete();
-
-        session()->flash('success', 'unread');
-
-        return redirect()->back();
     }
 }

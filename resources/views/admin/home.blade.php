@@ -16,6 +16,9 @@
 
                     You are logged in!
                 </div>
+                <div class='card-body'>
+                    <a href='{{ route('admin.admin.index') }}'>投稿一覧</a>
+                </div>
             </div>
         </div>
     </div>

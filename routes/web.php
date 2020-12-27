@@ -38,5 +38,12 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function () {
 
         // TOPページ
         Route::resource('home', 'HomeController', ['only' => 'index']);
+
+        // post一覧ページ
+        Route::resource('admin', 'AdminController');
     });
 });
+
+// 既読
+Route::get('/posts/read/{id}', 'PostController@read')->name('post.read');
+Route::get('/posts/unread/{id}', 'PostController@unread')->name('post.unread');
