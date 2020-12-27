@@ -22,3 +22,28 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('posts', 'PostController');
 
 Route::resource('comments', 'CommentController');
+
+// 管理者
+Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function () {
+
+    // ログイン認証関連
+    Auth::routes([
+        'register' => true,
+        'reset' => false,
+        'vertify' => false
+    ]); 
+
+    // ログイン認証後
+    Route::middleware('auth:admin')->group(function () {
+
+        // TOPページ
+        Route::resource('home', 'HomeController', ['only' => 'index']);
+
+        // post一覧ページ
+        Route::resource('admin', 'AdminController');
+    });
+});
+
+// 既読
+Route::get('/posts/read/{id}', 'PostController@read')->name('post.read');
+Route::get('/posts/unread/{id}', 'PostController@unread')->name('post.unread');
