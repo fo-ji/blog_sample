@@ -47,3 +47,7 @@ Route::namespace('Admin')->prefix('admin')->name('admin.')->group(function () {
 // 既読
 Route::get('/posts/read/{id}', 'PostController@read')->name('post.read');
 Route::get('/posts/unread/{id}', 'PostController@unread')->name('post.unread');
+
+// お気に入り機能
+Route::get('/posts/favorite/{id}', 'PostController@favorite')->name('post.favorite');
+Route::get('/posts/unfavorite/{id}', 'PostController@unfavorite')->name('post.unfavorite');

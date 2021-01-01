@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use App\Post;
 use App\Read;
+use App\Favorite;
 use Auth;
+use DB;
 
 class PostController extends Controller
 {
@@ -23,7 +25,19 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::all();
-        return view('posts.index', compact('posts'));
+
+        $user_id = Auth::id();
+
+        $favorites = DB::table('favorites')
+                        ->join('posts', 'posts.id', '=', 'favorites.post_id')
+                        ->join('users', 'users.id', '=', 'favorites.user_id')
+                        ->where('favorites.user_id', '=', $user_id)
+                        ->get();
+
+        return view('posts.index', [
+            'posts' => $posts,
+            'favorites' => $favorites,
+        ]);
     }
 
     /**
@@ -135,6 +149,36 @@ class PostController extends Controller
 
         session()->flash('success', 'unread');
 
+        return redirect()->back();
+    }
+
+    /**
+     * 引数のIDに紐づく投稿をお気に入りに登録する
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function favorite($id)
+    {
+        Favorite::create([
+            'post_id' => $id,
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()->back();
+    }
+
+    /**
+     * 引数のIDに紐づく投稿をお気に入りから解除する
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function unfavorite($id)
+    {
+        $favorite = Favorite::where('post_id', $id)->where('user_id', Auth::id())->first();
+        $favorite->delete();
+        
         return redirect()->back();
     }
 }
