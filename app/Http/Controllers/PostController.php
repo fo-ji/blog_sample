@@ -79,8 +79,11 @@ class PostController extends Controller
     {
         $post = Post::findOrFail($id);
 
+        $read = Read::where('post_id', $id)->where('user_id', Auth::id())->first();
+
         return view('posts.show', [
             'post' => $post,
+            'read' => $read
         ]);
     }
 
@@ -119,37 +122,30 @@ class PostController extends Controller
     }
 
     /**
-     * 引数のIDに紐づく投稿に既読する
+     * 既読機能
      *
      * @param int $id
      * @return \Illuminate\Http\RedirectResponse
      */
     public function read($id)
     {
-        Read::create([
-            'post_id' => $id,
-            'user_id' => Auth::id(),
-        ]);
-
-        session()->flash('success', 'already read');
-
-        return redirect()->back();
-    }
-
-    /**
-     * 引数のIDに紐づく投稿の既読を解除する
-     *
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function unread($id)
-    {
         $read = Read::where('post_id', $id)->where('user_id', Auth::id())->first();
-        $read->delete();
 
-        session()->flash('success', 'unread');
+        if (is_null($read)) {
+            Read::create([
+                'read' => true,
+                'post_id' => $id,
+                'user_id' => Auth::id(),
+            ]);
 
-        return redirect()->back();
+            return redirect()->back();
+
+        } else {
+            $read->read = !$read->read;
+            $read->save();
+
+            return redirect()->back();
+        }
     }
 
     /**

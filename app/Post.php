@@ -14,27 +14,6 @@ class Post extends Model
         return $this->hasMany(Read::class, 'post_id');
     }
 
-    /**
-     * 投稿が既読になっているか判定
-     *
-     * @return bool
-     */
-    public function is_read()
-    {
-        $id = Auth::id();
-
-        $readers = array();
-        foreach($this->reads as $read) {
-            array_push($readers, $read->user_id);
-        }
-
-        if (in_array($id, $readers)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public function favorites()
     {
         return $this->hasMany(Favorite::class, 'post_id');

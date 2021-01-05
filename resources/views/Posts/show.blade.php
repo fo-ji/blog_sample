@@ -13,10 +13,10 @@
                 </div>
                 <div class="card-footer text-muted">投稿日時：{{ $post->created_at }}</div>
                 <div class='mt-3'>
-                    @if ($post->is_read())
-                        <a href='{{ route('post.unread', ['id' => $post->id]) }}' class='btn btn-success btn-sm'>未読にする</a>
-                    @else
+                    @if (is_null($read) || $read->read == false)
                         <a href='{{ route('post.read', ['id' => $post->id]) }}' class='btn btn-secondary btn-sm'>既読にする</a>
+                    @else
+                        <a href='{{ route('post.read', ['id' => $post->id]) }}' class='btn btn-success btn-sm'>未読にする</a>
                     @endif
                 </div>
                 <div class='my-3'>
