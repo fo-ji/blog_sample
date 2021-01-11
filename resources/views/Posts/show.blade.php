@@ -20,10 +20,10 @@
                     @endif
                 </div>
                 <div class='my-3'>
-                    @if ($post->is_favorite())
-                        <a href='{{ route('post.unfavorite', ['id' => $post->id]) }}' class='btn btn-success btn-sm'>お気に入りを解除する</a>
+                    @if (is_null($favorite) || $favorite->favorite == false)
+                        <a href='{{ route('post.favorite', ['id' => $post->id]) }}' class='btn btn-success btn-sm'>お気に入りに登録する</a>
                     @else
-                        <a href='{{ route('post.favorite', ['id' => $post->id]) }}' class='btn btn-secondary btn-sm'>お気に入りに登録する</a>
+                        <a href='{{ route('post.favorite', ['id' => $post->id]) }}' class='btn btn-secondary btn-sm'>お気に入り解除する</a>
                     @endif
                 </div>
             </div>

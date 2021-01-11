@@ -78,12 +78,13 @@ class PostController extends Controller
     public function show($id)
     {
         $post = Post::findOrFail($id);
-
         $read = Read::where('post_id', $id)->where('user_id', Auth::id())->first();
+        $favorite = Favorite::where('post_id', $id)->where('user_id', Auth::id())->first();
 
         return view('posts.show', [
             'post' => $post,
-            'read' => $read
+            'read' => $read,
+            'favorite' => $favorite
         ]);
     }
 
@@ -149,32 +150,28 @@ class PostController extends Controller
     }
 
     /**
-     * 引数のIDに紐づく投稿をお気に入りに登録する
+     * 投稿をお気に入りに登録する
      *
      * @param int $id
      * @return \Illuminate\Http\RedirectResponse
      */
     public function favorite($id)
     {
-        Favorite::create([
-            'post_id' => $id,
-            'user_id' => Auth::id(),
-        ]);
-
-        return redirect()->back();
-    }
-
-    /**
-     * 引数のIDに紐づく投稿をお気に入りから解除する
-     *
-     * @param int $id
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function unfavorite($id)
-    {
         $favorite = Favorite::where('post_id', $id)->where('user_id', Auth::id())->first();
-        $favorite->delete();
-        
-        return redirect()->back();
+
+        if (is_null($favorite)) {
+            Favorite::create([
+                'favorite' => true,
+                'post_id' => $id,
+                'user_id' => Auth::id(),
+            ]);
+
+            return redirect()->back();
+        } else {
+            $favorite->favorite = !$favorite->favorite;
+            $favorite->save();
+
+            return redirect()->back();
+        }
     }
 }
