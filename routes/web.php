@@ -49,3 +49,5 @@ Route::get('/posts/read/{id}', 'PostController@read')->name('post.read');
 
 // お気に入り機能
 Route::get('/posts/favorite/{id}', 'PostController@favorite')->name('post.favorite');
+
+Route::get('sample/react', 'SampleController@react');
