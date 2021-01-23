@@ -11,9 +11,9 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/{any}', function () {
     return view('welcome');
-});
+})->where('any', '.*');
 
 Auth::routes();
 
@@ -50,4 +50,5 @@ Route::get('/posts/read/{id}', 'PostController@read')->name('post.read');
 // お気に入り機能
 Route::get('/posts/favorite/{id}', 'PostController@favorite')->name('post.favorite');
 
+// サンプル作成&動作確認
 Route::get('sample/react', 'SampleController@react');
