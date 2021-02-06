@@ -1,14 +1,6 @@
 import * as Actions from './actions'
 import initialState from "../store/initialState";
-
-type ActionProps = {
-  type: string
-  payload: {
-    isSignedIn: boolean,
-    uid: string,
-    username: string,
-  }
-}
+import ActionProps from './types'
 
 export const UsersReducer = (state = initialState.users, action: ActionProps) => {
   switch (action.type) {
