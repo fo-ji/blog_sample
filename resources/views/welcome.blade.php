@@ -65,30 +65,21 @@
         </style>
     </head>
     <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                        <a href="{{ route('admin.login') }}">Admin</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-                        <a href="{{ route('admin.login') }}">Admin</a>
+        <!-- @if (Route::has('login'))
+            <div class="top-right links">
+                @auth
+                    <a href="{{ url('/home') }}">Home</a>
+                    <a href="{{ route('admin.login') }}">Admin</a>
+                @else
+                    <a href="{{ route('login') }}">Login</a>
+                    <a href="{{ route('admin.login') }}">Admin</a>
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Blog Sample
-                </div>
-                <p>(Laravel + React + TypeScript)</p> 
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}">Register</a>
+                    @endif
+                @endauth
             </div>
-        </div>
+        @endif -->
         <div id="root"></div>
         <script src="{{ mix('js/index.js')}}"></script>
     </body>

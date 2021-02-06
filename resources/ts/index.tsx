@@ -1,14 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
+import { ConnectedRouter } from 'connected-react-router'
+import * as History from 'history'
 import createStore from './reducks/store/store'
 import Application from './Application'
+import '../sass/app.scss'
 
-export const store = createStore()
+const history = History.createBrowserHistory()
+export const store = createStore(history)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Application />
+    <ConnectedRouter history={history}>
+      <Application />
+    </ConnectedRouter>
   </Provider>,
   document.getElementById('root')
 )
