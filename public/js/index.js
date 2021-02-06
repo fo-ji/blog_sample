@@ -34002,6 +34002,38 @@ if (false) {} else {
 
 /***/ }),
 
+/***/ "./node_modules/redux-thunk/es/index.js":
+/*!**********************************************!*\
+  !*** ./node_modules/redux-thunk/es/index.js ***!
+  \**********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+function createThunkMiddleware(extraArgument) {
+  return function (_ref) {
+    var dispatch = _ref.dispatch,
+        getState = _ref.getState;
+    return function (next) {
+      return function (action) {
+        if (typeof action === 'function') {
+          return action(dispatch, getState, extraArgument);
+        }
+
+        return next(action);
+      };
+    };
+  };
+}
+
+var thunk = createThunkMiddleware();
+thunk.withExtraArgument = createThunkMiddleware;
+
+/* harmony default export */ __webpack_exports__["default"] = (thunk);
+
+/***/ }),
+
 /***/ "./node_modules/redux/es/redux.js":
 /*!****************************************!*\
   !*** ./node_modules/redux/es/redux.js ***!
@@ -36554,16 +36586,20 @@ exports.default = initialState;
 
 "use strict";
 
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var redux_1 = __webpack_require__(/*! redux */ "./node_modules/redux/es/redux.js");
 var connected_react_router_1 = __webpack_require__(/*! connected-react-router */ "./node_modules/connected-react-router/esm/index.js");
 var reducers_1 = __webpack_require__(/*! ../users/reducers */ "./resources/ts/reducks/users/reducers.ts");
+var redux_thunk_1 = __importDefault(__webpack_require__(/*! redux-thunk */ "./node_modules/redux-thunk/es/index.js"));
 // [TODO]anyを修正する
 function createStore(history) {
     return redux_1.createStore(redux_1.combineReducers({
         router: connected_react_router_1.connectRouter(history),
         users: reducers_1.UsersReducer,
-    }), redux_1.applyMiddleware(connected_react_router_1.routerMiddleware(history)));
+    }), redux_1.applyMiddleware(connected_react_router_1.routerMiddleware(history), redux_thunk_1.default));
 }
 exports.default = createStore;
 
@@ -36605,6 +36641,86 @@ var signOutAction = function () {
     };
 };
 exports.signOutAction = signOutAction;
+
+
+/***/ }),
+
+/***/ "./resources/ts/reducks/users/operations.ts":
+/*!**************************************************!*\
+  !*** ./resources/ts/reducks/users/operations.ts ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.signIn = void 0;
+var actions_1 = __webpack_require__(/*! ./actions */ "./resources/ts/reducks/users/actions.ts");
+var connected_react_router_1 = __webpack_require__(/*! connected-react-router */ "./node_modules/connected-react-router/esm/index.js");
+var signIn = function () {
+    return function (dispatch, getState) { return __awaiter(void 0, void 0, void 0, function () {
+        var state, isSignedIn, url, response, username;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    state = getState();
+                    isSignedIn = state.users.isSignedIn;
+                    if (!!isSignedIn) return [3 /*break*/, 2];
+                    url = 'https://api.github.com/users/fo-ji';
+                    return [4 /*yield*/, fetch(url).then(function (res) { return res.json(); })];
+                case 1:
+                    response = _a.sent();
+                    username = response.login;
+                    dispatch(actions_1.signInAction({
+                        isSignedIn: true,
+                        uid: '00001',
+                        username: username,
+                    }));
+                    dispatch(connected_react_router_1.push('/'));
+                    _a.label = 2;
+                case 2: return [2 /*return*/];
+            }
+        });
+    }); };
+};
+exports.signIn = signIn;
 
 
 /***/ }),
@@ -36679,10 +36795,11 @@ exports.UsersReducer = UsersReducer;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserId = void 0;
+exports.getUserName = exports.getUserId = void 0;
 var reselect_1 = __webpack_require__(/*! reselect */ "./node_modules/reselect/es/index.js");
 var usersSelector = function (state) { return state.users; };
 exports.getUserId = reselect_1.createSelector([usersSelector], function (state) { return state.uid; });
+exports.getUserName = reselect_1.createSelector([usersSelector], function (state) { return state.username; });
 
 
 /***/ }),
@@ -36706,9 +36823,15 @@ var react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react
 var Home = function () {
     var selector = react_redux_1.useSelector(function (state) { return state; });
     var uid = selectors_1.getUserId(selector);
+    var username = selectors_1.getUserName(selector);
     return (react_1.default.createElement("div", { className: "content" },
         react_1.default.createElement("div", { className: "title m-b-md" }, "Blog Sample"),
-        react_1.default.createElement("p", null, uid),
+        react_1.default.createElement("p", null,
+            "\u30E6\u30FC\u30B6\u30FCID\uFF1A",
+            uid),
+        react_1.default.createElement("p", null,
+            "\u30E6\u30FC\u30B6\u30FCID\uFF1A",
+            username),
         react_1.default.createElement("p", null, "(Laravel + React + TypeScript)")));
 };
 exports.default = Home;
@@ -36731,23 +36854,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
-var connected_react_router_1 = __webpack_require__(/*! connected-react-router */ "./node_modules/connected-react-router/esm/index.js");
-var actions_1 = __webpack_require__(/*! ../reducks/users/actions */ "./resources/ts/reducks/users/actions.ts");
+var operations_1 = __webpack_require__(/*! ../reducks/users/operations */ "./resources/ts/reducks/users/operations.ts");
 var Login = function () {
     var dispatch = react_redux_1.useDispatch();
     return (react_1.default.createElement("div", { className: "container" },
         react_1.default.createElement("div", { className: "row justify-content-center" },
             react_1.default.createElement("div", { className: "col-md-8" },
                 react_1.default.createElement("div", { className: "card-header" },
-                    react_1.default.createElement("button", { onClick: function () {
-                            dispatch(connected_react_router_1.push('/'));
-                            dispatch(
-                            // [TODO]修正する
-                            actions_1.signInAction({
-                                uid: '111111',
-                                username: 'fo-ji',
-                            }));
-                        } }, "Login"))))));
+                    react_1.default.createElement("button", { onClick: function () { return dispatch(operations_1.signIn()); } }, "Login"))))));
 };
 exports.default = Login;
 
