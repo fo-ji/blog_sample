@@ -34685,6 +34685,142 @@ if ( true && typeof isCrushed.name === 'string' && isCrushed.name !== 'isCrushed
 
 /***/ }),
 
+/***/ "./node_modules/reselect/es/index.js":
+/*!*******************************************!*\
+  !*** ./node_modules/reselect/es/index.js ***!
+  \*******************************************/
+/*! exports provided: defaultMemoize, createSelectorCreator, createSelector, createStructuredSelector */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaultMemoize", function() { return defaultMemoize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createSelectorCreator", function() { return createSelectorCreator; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createSelector", function() { return createSelector; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createStructuredSelector", function() { return createStructuredSelector; });
+function defaultEqualityCheck(a, b) {
+  return a === b;
+}
+
+function areArgumentsShallowlyEqual(equalityCheck, prev, next) {
+  if (prev === null || next === null || prev.length !== next.length) {
+    return false;
+  }
+
+  // Do this in a for loop (and not a `forEach` or an `every`) so we can determine equality as fast as possible.
+  var length = prev.length;
+  for (var i = 0; i < length; i++) {
+    if (!equalityCheck(prev[i], next[i])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function defaultMemoize(func) {
+  var equalityCheck = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : defaultEqualityCheck;
+
+  var lastArgs = null;
+  var lastResult = null;
+  // we reference arguments instead of spreading them for performance reasons
+  return function () {
+    if (!areArgumentsShallowlyEqual(equalityCheck, lastArgs, arguments)) {
+      // apply arguments instead of spreading for performance.
+      lastResult = func.apply(null, arguments);
+    }
+
+    lastArgs = arguments;
+    return lastResult;
+  };
+}
+
+function getDependencies(funcs) {
+  var dependencies = Array.isArray(funcs[0]) ? funcs[0] : funcs;
+
+  if (!dependencies.every(function (dep) {
+    return typeof dep === 'function';
+  })) {
+    var dependencyTypes = dependencies.map(function (dep) {
+      return typeof dep;
+    }).join(', ');
+    throw new Error('Selector creators expect all input-selectors to be functions, ' + ('instead received the following types: [' + dependencyTypes + ']'));
+  }
+
+  return dependencies;
+}
+
+function createSelectorCreator(memoize) {
+  for (var _len = arguments.length, memoizeOptions = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    memoizeOptions[_key - 1] = arguments[_key];
+  }
+
+  return function () {
+    for (var _len2 = arguments.length, funcs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      funcs[_key2] = arguments[_key2];
+    }
+
+    var recomputations = 0;
+    var resultFunc = funcs.pop();
+    var dependencies = getDependencies(funcs);
+
+    var memoizedResultFunc = memoize.apply(undefined, [function () {
+      recomputations++;
+      // apply arguments instead of spreading for performance.
+      return resultFunc.apply(null, arguments);
+    }].concat(memoizeOptions));
+
+    // If a selector is called with the exact same arguments we don't need to traverse our dependencies again.
+    var selector = memoize(function () {
+      var params = [];
+      var length = dependencies.length;
+
+      for (var i = 0; i < length; i++) {
+        // apply arguments instead of spreading and mutate a local list of params for performance.
+        params.push(dependencies[i].apply(null, arguments));
+      }
+
+      // apply arguments instead of spreading for performance.
+      return memoizedResultFunc.apply(null, params);
+    });
+
+    selector.resultFunc = resultFunc;
+    selector.dependencies = dependencies;
+    selector.recomputations = function () {
+      return recomputations;
+    };
+    selector.resetRecomputations = function () {
+      return recomputations = 0;
+    };
+    return selector;
+  };
+}
+
+var createSelector = createSelectorCreator(defaultMemoize);
+
+function createStructuredSelector(selectors) {
+  var selectorCreator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : createSelector;
+
+  if (typeof selectors !== 'object') {
+    throw new Error('createStructuredSelector expects first argument to be an object ' + ('where each property is a selector, instead received a ' + typeof selectors));
+  }
+  var objectKeys = Object.keys(selectors);
+  return selectorCreator(objectKeys.map(function (key) {
+    return selectors[key];
+  }), function () {
+    for (var _len3 = arguments.length, values = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+      values[_key3] = arguments[_key3];
+    }
+
+    return values.reduce(function (composition, value, index) {
+      composition[objectKeys[index]] = value;
+      return composition;
+    }, {});
+  });
+}
+
+/***/ }),
+
 /***/ "./node_modules/resolve-pathname/esm/resolve-pathname.js":
 /*!***************************************************************!*\
   !*** ./node_modules/resolve-pathname/esm/resolve-pathname.js ***!
@@ -36426,7 +36562,7 @@ var reducers_1 = __webpack_require__(/*! ../users/reducers */ "./resources/ts/re
 function createStore(history) {
     return redux_1.createStore(redux_1.combineReducers({
         router: connected_react_router_1.connectRouter(history),
-        users: reducers_1.UsersReducer
+        users: reducers_1.UsersReducer,
     }), redux_1.applyMiddleware(connected_react_router_1.routerMiddleware(history)));
 }
 exports.default = createStore;
@@ -36445,27 +36581,27 @@ exports.default = createStore;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.signOutAction = exports.SIGN_OUT = exports.signInAction = exports.SIGN_IN = void 0;
-exports.SIGN_IN = "SIGN_IN";
+exports.SIGN_IN = 'SIGN_IN';
 var signInAction = function (userState) {
     return {
-        type: "SIGN_IN",
+        type: 'SIGN_IN',
         payload: {
             isSignedIn: true,
             uid: userState.uid,
             username: userState.username,
-        }
+        },
     };
 };
 exports.signInAction = signInAction;
-exports.SIGN_OUT = "SIGN_OUT";
+exports.SIGN_OUT = 'SIGN_OUT';
 var signOutAction = function () {
     return {
-        type: "SIGN_OUT",
+        type: 'SIGN_OUT',
         payload: {
             isSignedIn: false,
-            uid: "",
-            username: "",
-        }
+            uid: '',
+            username: '',
+        },
     };
 };
 exports.signOutAction = signOutAction;
@@ -36533,6 +36669,24 @@ exports.UsersReducer = UsersReducer;
 
 /***/ }),
 
+/***/ "./resources/ts/reducks/users/selectors.ts":
+/*!*************************************************!*\
+  !*** ./resources/ts/reducks/users/selectors.ts ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getUserId = void 0;
+var reselect_1 = __webpack_require__(/*! reselect */ "./node_modules/reselect/es/index.js");
+var usersSelector = function (state) { return state.users; };
+exports.getUserId = reselect_1.createSelector([usersSelector], function (state) { return state.uid; });
+
+
+/***/ }),
+
 /***/ "./resources/ts/templates/Home.tsx":
 /*!*****************************************!*\
   !*** ./resources/ts/templates/Home.tsx ***!
@@ -36547,9 +36701,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+var selectors_1 = __webpack_require__(/*! ../reducks/users/selectors */ "./resources/ts/reducks/users/selectors.ts");
+var react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 var Home = function () {
+    var selector = react_redux_1.useSelector(function (state) { return state; });
+    var uid = selectors_1.getUserId(selector);
     return (react_1.default.createElement("div", { className: "content" },
         react_1.default.createElement("div", { className: "title m-b-md" }, "Blog Sample"),
+        react_1.default.createElement("p", null, uid),
         react_1.default.createElement("p", null, "(Laravel + React + TypeScript)")));
 };
 exports.default = Home;
@@ -36573,13 +36732,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 var react_redux_1 = __webpack_require__(/*! react-redux */ "./node_modules/react-redux/es/index.js");
 var connected_react_router_1 = __webpack_require__(/*! connected-react-router */ "./node_modules/connected-react-router/esm/index.js");
+var actions_1 = __webpack_require__(/*! ../reducks/users/actions */ "./resources/ts/reducks/users/actions.ts");
 var Login = function () {
     var dispatch = react_redux_1.useDispatch();
     return (react_1.default.createElement("div", { className: "container" },
         react_1.default.createElement("div", { className: "row justify-content-center" },
             react_1.default.createElement("div", { className: "col-md-8" },
                 react_1.default.createElement("div", { className: "card-header" },
-                    react_1.default.createElement("button", { onClick: function () { return dispatch(connected_react_router_1.push('/')); } }, "Login"))))));
+                    react_1.default.createElement("button", { onClick: function () {
+                            dispatch(connected_react_router_1.push('/'));
+                            dispatch(
+                            // [TODO]修正する
+                            actions_1.signInAction({
+                                uid: '111111',
+                                username: 'fo-ji',
+                            }));
+                        } }, "Login"))))));
 };
 exports.default = Login;
 

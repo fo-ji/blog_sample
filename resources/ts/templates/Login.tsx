@@ -1,19 +1,33 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { push } from 'connected-react-router'
+import { signInAction } from '../reducks/users/actions'
 
 const Login = () => {
   const dispatch = useDispatch()
 
   return (
     <div className="container">
-        <div className="row justify-content-center">
-            <div className="col-md-8">
-              <div className="card-header">
-                <button onClick={() => dispatch(push('/'))}>Login</button>
-              </div>
-                {/* <div className="card"> */}
-                    {/* <div className="card-header">{{ __('Login') }}</div>
+      <div className="row justify-content-center">
+        <div className="col-md-8">
+          <div className="card-header">
+            <button
+              onClick={() => {
+                dispatch(push('/'))
+                dispatch(
+                  // [TODO]修正する
+                  signInAction({
+                    uid: '111111',
+                    username: 'fo-ji',
+                  })
+                )
+              }}
+            >
+              Login
+            </button>
+          </div>
+          {/* <div className="card"> */}
+          {/* <div className="card-header">{{ __('Login') }}</div>
 
                     <div className="card-body">
                         <form method="POST" action="{{ route('login') }}">
@@ -75,8 +89,8 @@ const Login = () => {
                         </form>
                     </div>
                 </div> */}
-            </div>
         </div>
+      </div>
     </div>
   )
 }
